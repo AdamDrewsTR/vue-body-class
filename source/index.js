@@ -4,61 +4,63 @@ export default class VueBodyClass {
   }
 
   guard(to, from, next) {
-    let parent = this.routes
-    const toMatched = this.parseMatched(to.matched)
-    let additionalClassName = ''
-    let classesToRemove = ''
+    try {
+      let parent = this.routes
+      const toMatched = this.parseMatched(to.matched)
+      let additionalClassName = ''
+      let classesToRemove = ''
 
-    //is a home page?
-    if (to.path == '/') {
-      additionalClassName = this.updateClassFromRoute(additionalClassName, to)
-    }
-    //not homepage
-    else if (toMatched.length > 0) {
-      for (const index in toMatched) {
-        const routes = parent.children ? parent.children : parent
-        const found = this.findMatchInRoutesByPath(routes, toMatched[index])
-
-        if (found) {
-          parent = found
-          additionalClassName = this.updateClassFromRoute(
-            additionalClassName,
-            found
-          )
-        }
+      //is a home page?
+      if (to.path == '/') {
+        additionalClassName = this.updateClassFromRoute(additionalClassName, to)
       }
-    }
+      //not homepage
+      else if (toMatched.length > 0) {
+        for (const index in toMatched) {
+          const routes = parent.children ? parent.children : parent
+          const found = this.findMatchInRoutesByPath(routes, toMatched[index])
 
-    const fromMatched = this.parseMatched(from.matched)
-    if (fromMatched.length > 0) {
-      parent = this.routes
-      for (const index in fromMatched) {
-        const routes = parent.children ? parent.children : parent
-        const found = this.findMatchInRoutesByPath(routes, fromMatched[index])
-
-        if (found) {
-          parent = found
-          classesToRemove += this.getClassForRoute(found) || ''
-        }
-      }
-
-      if (classesToRemove) {
-        const classArray = classesToRemove.split()
-        classArray.forEach((individialClass) => {
-          individialClass = individialClass.trim()
-
-          if (individialClass) {
-            document.body.className = document.body.className
-              .split(individialClass)
-              .join('')
+          if (found) {
+            parent = found
+            additionalClassName = this.updateClassFromRoute(
+              additionalClassName,
+              found
+            )
           }
-        })
+        }
       }
-    }
 
-    document.body.className = (
-      document.body.className + additionalClassName
-    ).trim()
+      const fromMatched = this.parseMatched(from.matched)
+      if (fromMatched.length > 0) {
+        parent = this.routes
+        for (const index in fromMatched) {
+          const routes = parent.children ? parent.children : parent
+          const found = this.findMatchInRoutesByPath(routes, fromMatched[index])
+
+          if (found) {
+            parent = found
+            classesToRemove += this.getClassForRoute(found) || ''
+          }
+        }
+
+        if (classesToRemove) {
+          const classArray = classesToRemove.split()
+          classArray.forEach((individialClass) => {
+            individialClass = individialClass.trim()
+
+            if (individialClass) {
+              document.body.className = document.body.className
+                .split(individialClass)
+                .join('')
+            }
+          })
+        }
+      }
+
+      document.body.className = (
+        document.body.className + additionalClassName
+      ).trim()
+    } catch {}
 
     next()
   }
