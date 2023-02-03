@@ -31,19 +31,27 @@ export default class VueBodyClass {
 
     const fromMatched = this.parseMatched(from.matched)
     if (fromMatched.length > 0) {
+      parent = this.routes
       for (const index in fromMatched) {
-        const routes = this.routes.children ? this.routes.children : this.routes
-        const found = this.findMatchInRoutesByPath(routes, toMatched[index])
+        const routes = parent.children ? parent.children : parent
+        const found = this.findMatchInRoutesByPath(routes, fromMatched[index])
 
         if (found) {
-          classesToRemove += this.getClassForRoute(found)
+          parent = found
+          classesToRemove += this.getClassForRoute(found) || ''
         }
       }
 
       if (classesToRemove) {
         const classArray = classesToRemove.split()
         classArray.forEach((individialClass) => {
-          document.body.className.split(individialClass.trim()).join('')
+          individialClass = individialClass.trim()
+
+          if (individialClass) {
+            document.body.className = document.body.className
+              .split(individialClass)
+              .join('')
+          }
         })
       }
     }
